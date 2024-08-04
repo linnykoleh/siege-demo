@@ -1,45 +1,5 @@
-version: '3.6'
+version: '3.8'
 services:
-  telegraf:
-    image: telegraf:latest
-    volumes:
-      - ./telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    depends_on:
-      - influxdb
-      - mongodb
-      - elasticsearch
-      - java-app
-    links:
-      - influxdb
-      - mongodb
-      - elasticsearch
-      - java-app
-    ports:
-      - '127.0.0.1:8125:8125/udp'
-
-  influxdb:
-    image: influxdb:1.8
-    env_file: configuration.env
-    ports:
-      - '127.0.0.1:8086:8086'
-    volumes:
-      - ./:/imports
-      - influxdb_data:/var/lib/influxdb
-
-  grafana:
-    image: grafana/grafana:8.0.2
-    depends_on:
-      - influxdb
-    env_file: configuration.env
-    links:
-      - influxdb
-    ports:
-      - '127.0.0.1:3000:3000'
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
-
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -50,45 +10,21 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - app-network
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+  app:
+    image: siege-java-app:latest
     ports:
-      - "127.0.0.1:9200:9200"
-      - "127.0.0.1:9300:9300"
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "127.0.0.1:8080:8080"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    depends_on:
-      - grafana
-      - mongodb
-      - elasticsearch
-      - influxdb
-
-  # first build the java-app image using the Dockerfile (see README.md)
-  java-app:
-    image: tig-java-app:latest
-    container_name: java-app
-    ports:
-      - "8082:8082"
-      - "8778:8778"
+      - "8080:8080"
     depends_on:
       - mongodb
-      - elasticsearch
-      - influxdb
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  grafana_data: {}
-  influxdb_data: {}
-  mongodb_data: {}
-  esdata: {}
+  mongodb_data:

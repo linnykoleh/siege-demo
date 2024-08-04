@@ -13,8 +13,8 @@ public class MongoConfig {
 
     @Bean
     public MongoClient mongo() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/test");
-        MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+        var connectionString = new ConnectionString("mongodb://root:root@mongodb:27017/siege?authSource=admin");
+        var mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
 
@@ -22,7 +22,8 @@ public class MongoConfig {
     }
 
     @Bean
-    public MongoTemplate mongoTemplate() throws Exception {
+    public MongoTemplate mongoTemplate() {
         return new MongoTemplate(mongo(), "siege");
     }
 }
+

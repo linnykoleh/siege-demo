@@ -1,99 +1,88 @@
 ## Build
 
-- Run `docker build -t tig-java-app:latest .` to build the docker image for the java app.
-
---- 
-
-## Urls
-
-- grafana url: http://localhost:3000
-- nginx url: http://localhost:8080/nginx_status
+- Run `docker build -t siege-java-app:latest .` to build the docker image for the java app.
 
 ---
 
-## Bencharking Java application with Apache Benchmark
+## Siege
 
-- Run `ab -c 10 -n 500 -r http://localhost:8082/create` to benchmark the java app.
+[siege_urls.txt](siege_urls.txt)
 
-### Before benchmarking
+- Run `siege -c 10 -t 60S -f siege_urls.txt` to benchmark the java app for 60 seconds with 10 concurrent users.
+- Run `siege -c 25 -t 60S -f siege_urls.txt` to benchmark the java app for 60 seconds with 10 concurrent users.
+- Run `siege -c 50 -t 60S -f siege_urls.txt` to benchmark the java app for 60 seconds with 10 concurrent users.
+- Run `siege -c 100 -t 60S -f siege_urls.txt` to benchmark the java app for 60 seconds with 10 concurrent users.
 
-![12.jpg](images/12.jpg)
-
-### After benchmarking
-
-![13.jpg](images/13.jpg)
-
-```bash
-ab -c 10 -n 500 -r http://localhost:8082/create
-
-This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
-
-Benchmarking localhost (be patient)
-Completed 100 requests
-Completed 200 requests
-Completed 300 requests
-Completed 400 requests
-Completed 500 requests
-Finished 500 requests
-
-
-Server Software:        
-Server Hostname:        localhost
-Server Port:            8082
-
-Document Path:          /create
-Document Length:        13 bytes
-
-Concurrency Level:      10
-Time taken for tests:   52.369 seconds
-Complete requests:      500
-Failed requests:        406
-   (Connect: 0, Receive: 0, Length: 406, Exceptions: 0)
-Non-2xx responses:      400
-Total transferred:      99393 bytes
-HTML transferred:       44093 bytes
-Requests per second:    9.55 [#/sec] (mean)
-Time per request:       1047.389 [ms] (mean)
-Time per request:       104.739 [ms] (mean, across all concurrent requests)
-Transfer rate:          1.85 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.2      0       3
-Processing:   205 1019 1654.2    377   12765
-Waiting:      205 1018 1654.3    376   12764
-Total:        205 1019 1654.3    377   12765
-
-Percentage of the requests served within a certain time (ms)
-  50%    377
-  66%    726
-  75%   1227
-  80%   1285
-  90%   2065
-  95%   5036
-  98%   7228
-  99%   9947
- 100%  12765 (longest request)
-
-```
+---
 
 ## Results
 
-### Java app metrics
+### Siege with 10 concurrent users for 60 seconds:
 
-![1.png](images/1.png)
-![2.png](images/2.png)
-![3.png](images/3.png)
+```bash
+Transactions:                  21711 hits
+Availability:                 100.00 %
+Elapsed time:                  60.29 secs
+Data transferred:               0.21 MB
+Response time:                  0.03 secs
+Transaction rate:             360.11 trans/sec
+Throughput:                     0.00 MB/sec
+Concurrency:                    9.92
+Successful transactions:       14471
+Failed transactions:               0
+Longest transaction:            0.28
+Shortest transaction:           0.00
+```
 
-### Telegraf metrics
+### Siege with 25 concurrent users for 60 seconds:
 
-![4.png](images/4.png)
-![5.png](images/5.png)
-![6.png](images/6.png)
-![7.png](images/7.png)
-![8.png](images/8.png)
-![9.png](images/9.png)
-![10.png](images/10.png)
-![11.png](images/11.png)
+```bash
+Transactions:                  11294 hits
+Availability:                 100.00 %
+Elapsed time:                  60.53 secs
+Data transferred:               0.11 MB
+Response time:                  0.13 secs
+Transaction rate:             186.59 trans/sec
+Throughput:                     0.00 MB/sec
+Concurrency:                   24.74
+Successful transactions:        7522
+Failed transactions:               0
+Longest transaction:            0.82
+Shortest transaction:           0.00
+```
+
+### Siege with 50 concurrent users for 60 seconds:
+
+```bash
+Transactions:                   4116 hits
+Availability:                  99.93 %
+Elapsed time:                  60.94 secs
+Data transferred:               0.04 MB
+Response time:                  0.73 secs
+Transaction rate:              67.54 trans/sec
+Throughput:                     0.00 MB/sec
+Concurrency:                   49.57
+Successful transactions:        2730
+Failed transactions:               3
+Longest transaction:           19.48
+Shortest transaction:           0.00
+```
+
+### Siege with 100 concurrent users for 60 seconds:
+
+```bash
+Transactions:                    249 hits
+Availability:                  89.57 %
+Elapsed time:                  60.64 secs
+Data transferred:               0.01 MB
+Response time:                  6.61 secs
+Transaction rate:               4.11 trans/sec
+Throughput:                     0.00 MB/sec
+Concurrency:                   27.15
+Successful transactions:         131
+Failed transactions:              29
+Longest transaction:           58.07
+Shortest transaction:           0.00
+```
+
+---

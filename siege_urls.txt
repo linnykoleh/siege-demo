@@ -1,0 +1,3 @@
+http://localhost:8080/user/testUserName/testLastName POST
+http://localhost:8080/user/testUserName GET
+http://localhost:8080/user/testUserName DELETE
